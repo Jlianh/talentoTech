@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 let HouseSchema = new mongoose.Schema({
     address: {
@@ -16,11 +16,27 @@ let HouseSchema = new mongoose.Schema({
     },
     city: {
         type: String,
-        required: true
+        required: true,
+        validate: {
+            validator: async function(city){
+                var response = await fetchs('https://api-colombia.com/api/v1/City');
+                var cities = await response.json();
+                return cities.some(city => city.name.toUpperCase().includes(city.toUpperCase()));
+            },
+            message: props => `${props.value} The city doesnt belong to the country`
+        }
     },
     state: {
         type: String,
-        required: true
+        required: true,
+        validate: {
+            validator: async function(state){
+                var response = await fetchs('https://api-colombia.com/api/v1/City');
+                var departaments = await response.json();
+                return departaments.some(departament => departament.name.toUpperCase().includes(state.toUpperCase()));
+            },
+            message: props => `${props.value} The city doesnt belong to the country`
+        }
     },
     size: {
         type: Number,
