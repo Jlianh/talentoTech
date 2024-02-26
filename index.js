@@ -19,30 +19,30 @@ const messageRoutes = require('./routes/MessageRouter.js');
 
 const MessageSchema = require('./models/Message.js');
 
+io.on('connect', (socket)=> {
+    console.log("connected")
+
+    socket.on('message', (data) =>{
+        var payload = JSON.parse(data)
+        console.log(data);
+        MessageSchema(payload).save().then((result)=>{
+            socket.broadcast.emit('message-receipt', payload);
+        }).catch((err)=>{
+            console.log({"status" : "Failed", "message": "The message wasnt received"});
+        })
+    });
+
+    socket.on('disconnect', (socket) =>{
+        console.log("disconnect");
+    });
+})
+
 app.use(express.urlencoded({extended: true}))
 app.use(express.json())
 app.use((req, res, next)=>{
     res.io = io
     next()
 });
-
-io.on('connect', (socket)=> {
-    console.log("connected")
-
-    socket.on('message', (data) =>{
-        var payload = JSON.parse(data)
-        console.log(data)
-        MessageSchema(payload).save().then((result)=>{
-            socket.emit('message', {"message" : "Message received"});
-        }).catch((err)=>{
-            socket.emit('message', {"message" : "Message wasnt received"});
-        })
-    });
-
-    socket.on('disconnect', (socket) =>{
-        console.log("disconnect")
-    });
-})
 
 app.use(router);
 app.use('/user', userRoutes);

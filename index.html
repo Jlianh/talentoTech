@@ -13,8 +13,8 @@
 
             </div>
             <div>
-                <textarea name="envio-mensajes" id="" cols="30" rows="10"></textarea>
-                <button type="button" id="send" onclick="addMessage(data)">Enviar</button>
+                <textarea name="envio-mensajes" id="messageBody" cols="30" rows="10"></textarea>
+                <button type="button" id="send">Enviar</button>
             </div>
         </div>
     </div>
@@ -33,29 +33,47 @@
                 console.log("connected")
             })
 
-            socket.on('messages', function(data){
-                addMessage(data)
+            socket.on('message-receipt', function(data){
+                console.log(data);
+                addMessage(data, true);
             })
 
             $("#send").click(function(){
-                content = $("textarea").val();
-
-                var data = JSON.stringify({
-                    "body": content,
-                    "from": "65cebcd3fc0006a5c7c2521f",
-                    "to": "65ceba384cc1afbb34a2047d"
-                })
-
-                socket.emit.broadcast("message", data);
+                prepareMessage(socket)
             })
+
+            $("#messageBody").on("keypress", function(){
+                if(event.which === 13){
+                    prepareMessage(socket)
+                }
+            })
+
         })
 
-        function addMessage(data){
+        function addMessage(data, sender = false){
             const messageElement = document.createElement('li');
             messageElement.textContent = data.body;
+            if(sender){
+                messageElement.style.color='red';
+            }
 
             const messagesDiv = document.getElementById('mensajes');
             messagesDiv.appendChild(messageElement);
+        }
+
+        function prepareMessage(socket){
+            content = $("#messageBody").val();
+            console.log(content);
+            var payload = {
+                "body": content,
+                "from": "65cebcd3fc0006a5c7c2521f",
+                "to": "65ceba384cc1afbb34a2047d"
+            }
+
+            var data = JSON.stringify(payload);
+
+            socket.emit('message', data);
+            addMessage(payload);
         }
     </script>
 
