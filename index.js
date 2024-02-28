@@ -10,10 +10,14 @@ const socket = require('socket.io');
 const http = require('http').Server(app);
 const io = socket(http);
 
+const { createYoga } = require('graphql-yoga');
+const schema = require('./graphql/schema.js')
+
 const mongoose = require('mongoose');
 mongoose.connect(DB_URL);
 
 const userRoutes = require('./routes/UserRoutes.js');
+const authRouter = require('./routes/AuthRouter.js');
 const houseRoutes = require('./routes/HousesRoutes.js');
 const messageRoutes = require('./routes/MessageRouter.js');
 
@@ -44,8 +48,12 @@ app.use((req, res, next)=>{
     next()
 });
 
+const yoga = new createYoga({ schema });
+app.use('/graphql', yoga);
+
 app.use(router);
 app.use('/user', userRoutes);
+app.use('/auth', authRouter);
 app.use('/house', houseRoutes);
 app.use('/house', messageRoutes);
 app.use('/uploads', express.static('uploads'));

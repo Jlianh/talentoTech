@@ -1,64 +1,68 @@
 const bcrypt = require('bcrypt');
 const UserSchema = require('../models/User')
-const jwt = require('jsonwebtoken')
-
-require('dotenv').config()
-const secret = process.env.JWT_SECRET || '';
 
 class UserController {
 
-    constructor(){}
+    constructor() { }
 
-    async login(email, password){
-        try {
-            const user = await UserSchema.findOne({email});
-            if(!user){
-                return {"status":"error", "message":"The user doesnt exists"};
-            }
-            const passwordMatch = await bcrypt.compare(password, user.password);
-            if(!passwordMatch){
-                return {"status":"error", "message":"Incorrect password"};
-            }
-            const token = jwt.sign({userId: user._id, email: user.email, role: "admin"}, secret, {expiresIn: '1h'})
-            return {"status":"success", "token":token};
-        } catch (error) {
-            console.log(error)
-            return {"status":"error", "message":"Login error"};
-        }
+    async getUsers(req, res, next) {
+        let users = await UserSchema.find();
+        res.json(users)
     }
 
-    validateToken(req, res, next){
-        const token = req.headers['authorization'];
-        if(!token){
-            return res.status(401).json({"message": "The Token doesnt exists"});
-        }
-        const tokenWOBearer = token.startsWith("Bearer ") ? token.slice(7) : token;
-        jwt.verify(tokenWOBearer, 'secreto', (err, decoded)=>{
-            if(err){
-                return res.status(401).json({"message": "Invalid Token"});
-            }
-            req.userId = decoded.userId;
-            next();
+    async getUsersById(req, res) {
+        let users = await UserSchema.findById(req.params.id);
+        res.json(users)
+    }
+
+    async addUser(req, res) {
+        const password = await bcrypt.hash(req.body.password, 10);
+        let user = UserSchema({
+            identification: req.body.identification,
+            name: req.body.name,
+            lastname: req.body.lastname,
+            email: req.body.email,
+            password: password
         })
+        user.save().then((result) => {
+            res.send(result)
+        }).catch((err) => {
+            if (err.code == 11000) {
+                res.json({ "status": "failed", "message": "Email already exists" });
+            } else {
+                res.json({ "status": "failed", "message": "Error creating the user" });
+            }
+        });
     }
 
-    generateCode(){
-        var characters = '';
-        var numbers = '';
-        var numbersList = '1234567890'
-        var charactersList = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      
-        for (var i = 0; i < 4; i++) {
-            var randomIndex = Math.floor(Math.random() * numbersList.length);
-            characters += numbersList.charAt(randomIndex);
-        }
-    
-        for (var i = 0; i < 4; i++) {
-            var randomIndex = Math.floor(Math.random() * charactersList.length);
-            numbers += charactersList.charAt(randomIndex);
-        }
+    async editUser(req, res) {
+        var id = req.params.id;
 
-        return numbersList + charactersList
+        const password = await bcrypt.hash(req.body.password, 10);
+
+        var updatedUser = {
+            identification: req.body.id,
+            name: req.body.name,
+            lastname: req.body.lastname,
+            email: req.body.email,
+            password: password
+        };
+
+        UserSchema.findByIdAndUpdate(id, updatedUser, { new: true }).then((result) => {
+            res.send(result)
+        }).catch((error) => {
+            res.send("Error al actualizar el Usuario");
+        });
+    }
+
+    async deleteUser(req, res){
+        var id = req.params.id;
+
+        UserSchema.findByIdAndDelete({ _id: id }).then(() => {
+            res.json({ "status": "success", "message": "User deleted successfully" });
+        }).catch((error) => {
+            res.json({ "status": "failed", "message": "Error deleting user" });
+        });
     }
 }
 
