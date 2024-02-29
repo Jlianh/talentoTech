@@ -1,6 +1,6 @@
 const HouseSchema = require('../models/Houses')
 
-const Utils = require('../Utils/Utils')
+const Utils = require('../utils/Utils')
 const utils = new Utils();
 
 class HouseController {
@@ -21,26 +21,32 @@ class HouseController {
 
         var code = utils.generateCode()
 
-        let house = HouseSchema({
-            address: req.body.address,
-            city: req.body.city,
-            state: req.body.state,
-            size: req.body.size,
-            type: req.body.type,
-            zipCode: req.body.zipCode,
-            rooms: req.body.rooms,
-            bathrooms: req.body.bathrooms,
-            parking: req.body.parking,
-            price: req.body.price,
-            code: code,
-        })
+        var house = HouseSchema.findOne(code);
 
-        house.save().then((result) => {
-            res.send(result)
-        }).catch((err) => {
-            console.log(err)
-            res.json({ "status": "failed", "message": "Error creating the house" });
-        });
+        if(!house){
+            code = utils.generateCode();
+        } else {
+            let house = HouseSchema({
+                address: req.body.address,
+                city: req.body.city,
+                state: req.body.state,
+                size: req.body.size,
+                type: req.body.type,
+                zipCode: req.body.zipCode,
+                rooms: req.body.rooms,
+                bathrooms: req.body.bathrooms,
+                parking: req.body.parking,
+                price: req.body.price,
+                code: code,
+            })
+    
+            house.save().then((result) => {
+                res.send(result)
+            }).catch((err) => {
+                console.log(err)
+                res.json({ "status": "failed", "message": "Error creating the house" });
+            });
+        }
     }
 
     async editHouse(req, res) {

@@ -15,8 +15,8 @@ class Utils {
             var randomIndex = Math.floor(Math.random() * charactersList.length);
             numbers += charactersList.charAt(randomIndex);
         }
-
-        return numbersList + charactersList
+        
+        return numbers+characters
     }
 }
 
