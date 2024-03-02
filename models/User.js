@@ -20,7 +20,8 @@ let UserSchema = new mongoose.Schema({
         unique: true,
         validate:{
             validator: function(email){
-                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+                const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+                return regex.test(email);
             },
             message: props => `${props.value} no es un correo electrónico válido!`
         }
@@ -30,8 +31,7 @@ let UserSchema = new mongoose.Schema({
         required: true
     },
     avatar:{
-        type: String,
-        required: true
+        type: String
     }
 })
 

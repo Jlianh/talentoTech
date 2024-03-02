@@ -61,3 +61,4 @@ http.listen(port, ()=>{
     console.log('listen on ' + port)
 });
 
+module.exports = http

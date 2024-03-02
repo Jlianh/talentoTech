@@ -24,12 +24,14 @@ class UserController {
             email: req.body.email,
             password: password
         })
+        console.log(user)
         user.save().then((result) => {
             res.send(result)
         }).catch((err) => {
             if (err.code == 11000) {
                 res.json({ "status": "failed", "message": "Email already exists" });
             } else {
+                console.log(err);
                 res.json({ "status": "failed", "message": "Error creating the user" });
             }
         });
