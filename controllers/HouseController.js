@@ -77,9 +77,9 @@ class HouseController {
         var id = req.params.id;
 
         HouseSchema.findByIdAndDelete({ _id: id }).then(() => {
-            res.json({ "status": "success", "message": "House deleted successfully" });
+            res.status(200).json({ "status": "success", "message": "House deleted successfully" });
         }).catch((error) => {
-            res.json({ "status": "failed", "message": "Error deleting house" });
+            res.status(200).json({ "status": "failed", "message": "Error deleting house" });
         });
     }
 }
