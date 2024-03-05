@@ -2,4 +2,14 @@
 
 node_modules
 
-!uploads/.gitkeep
+uploads/houses/*
+
+uploads/users/*
+
+file.js
+
+archivo.txt
+
+readfile.js
+
+coverage

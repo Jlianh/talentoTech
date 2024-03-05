@@ -1,6 +1,10 @@
 const UserSchema = require('../models/User')
 const HouseSchema = require('../models/Houses')
 
+const xlsx = require('xlsx')
+
+const fs = require('fs')
+
 class FileUploadController {
 
     constructor() { }
@@ -41,6 +45,16 @@ class FileUploadController {
         });
     }
 
+    readDepartamentList(req, res){
+        fs.readFile('assets/departaments.json', 'utf8', (err, data)=>{
+            if(err){
+                res.status(500).send({"status": "Failed", "content": "The file wasnt read successfully"})
+                return
+            }
+            res.status(200).send({"status": "Success", "content": JSON.parse(data)})
+        })
+    }
+    
 }
 
 module.exports = FileUploadController;

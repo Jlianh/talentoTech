@@ -16,10 +16,14 @@ const schema = require('./graphql/schema.js')
 const mongoose = require('mongoose');
 mongoose.connect(DB_URL);
 
+const cors = require('cors')
+
 const userRoutes = require('./routes/UserRoutes.js');
 const authRouter = require('./routes/AuthRouter.js');
 const houseRoutes = require('./routes/HousesRoutes.js');
 const messageRoutes = require('./routes/MessageRouter.js');
+const departamentRoute = require('./routes/DepartamentRoute.js');
+
 
 const MessageSchema = require('./models/Message.js');
 
@@ -51,11 +55,14 @@ app.use((req, res, next)=>{
 const yoga = new createYoga({ schema });
 app.use('/graphql', yoga);
 
+app.use(cors())
+
 app.use(router);
 app.use('/user', userRoutes);
 app.use('/auth', authRouter);
 app.use('/house', houseRoutes);
-app.use('/house', messageRoutes);
+app.use('/message', messageRoutes);
+app.use('/departament', departamentRoute);
 app.use('/uploads', express.static('uploads'));
 http.listen(port, ()=>{
     console.log('listen on ' + port)

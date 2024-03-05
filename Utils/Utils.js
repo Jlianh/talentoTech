@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 
 class Utils {
     generateCode() {
@@ -17,6 +18,14 @@ class Utils {
         }
         
         return numbers+characters
+    }
+    
+   async encryptPassword(password, massive){
+        if(massive){ 
+            return await bcrypt.hashSync(password, 10);
+        } else {
+            return await bcrypt.hash(password, 10);
+        }
     }
 }
 

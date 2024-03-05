@@ -3,10 +3,10 @@ const houseRouter = express.Router();
 const multer = require('multer')
 
 const HouseController = require('../controllers/HouseController')
-const FileUploadController = require('../controllers/FileUploadController');
+const FileController = require('../controllers/FileController');
 
 const houseController = new HouseController();
-const fileUploadController = new FileUploadController();
+const fileController = new FileController();
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb){
@@ -38,6 +38,6 @@ houseRouter.patch('/editHouse/:id', houseController.editHouse)
 
 houseRouter.delete('/deleteHouse/:id', houseController.deleteHouse)
 
-houseRouter.post('/addHousePhoto/houseId/:id', upload.single('file'), fileUploadController.uploadHousePhoto);
+houseRouter.post('/addHousePhoto/houseId/:id', upload.single('file'), fileController.uploadHousePhoto);
 
 module.exports = houseRouter;
