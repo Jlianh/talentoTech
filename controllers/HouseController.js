@@ -1,6 +1,6 @@
 const HouseSchema = require('../models/Houses')
 
-const Utils = require('../utils/Utils')
+const Utils = require('../Utils/Utils')
 const utils = new Utils();
 
 class HouseController {
@@ -9,6 +9,7 @@ class HouseController {
 
     async getHouses(req, res, next) {
         let houses = await HouseSchema.find();
+        console.log(houses);
         res.json(houses)
     }
 

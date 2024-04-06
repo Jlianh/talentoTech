@@ -36,9 +36,9 @@ userRouter.get('/findById/:id', userController.getUsersById);
 
 userRouter.post('/addUser/', userController.addSingleUser);
 
-userRouter.patch('/editUser/:id', authController.validateToken, userController.editUser)
+userRouter.patch('/editUser/:id', userController.editUser)
 
-userRouter.delete('/deleteUser/:id', authController.validateToken, userController.deleteUser)
+userRouter.delete('/deleteUser/:id', userController.deleteUser)
 
 userRouter.post('/uploadUserPhoto/user/:id', upload.single('file'), fileController.uploadUserPhoto)
 

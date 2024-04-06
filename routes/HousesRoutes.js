@@ -4,9 +4,11 @@ const multer = require('multer')
 
 const HouseController = require('../controllers/HouseController')
 const FileController = require('../controllers/FileController');
+const AuthController = require('../controllers/AuthController');
 
 const houseController = new HouseController();
 const fileController = new FileController();
+const authController = new AuthController();
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb){

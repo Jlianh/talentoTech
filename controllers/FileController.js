@@ -1,8 +1,6 @@
 const UserSchema = require('../models/User')
 const HouseSchema = require('../models/Houses')
 
-const xlsx = require('xlsx')
-
 const fs = require('fs')
 
 class FileUploadController {

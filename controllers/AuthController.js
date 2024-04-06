@@ -14,17 +14,21 @@ class AuthController {
         var email = req.body.email;
         var password = req.body.password;
 
+        console.log(req.body)
+
         try {
             const user = await UserSchema.findOne({ email });
             if (!user) {
                 res.send({ "status": "error", "message": "The user doesnt exists" });
+            } else {
+                const passwordMatch = await bcrypt.compare(password, user.password);
+                if (!passwordMatch) {
+                    res.send({ "status": "error", "message": "Incorrect password" });
+                } else {
+                    const token = jwt.sign({ userId: user._id, email: user.email, avatar: user.avatar, fullname: `${user.name} ${user.lastname}`, role: "admin" }, secret, { expiresIn: '1h' })
+                    res.send({ "status": "success", "token": token, "user": user });
+                }
             }
-            const passwordMatch = await bcrypt.compare(password, user.password);
-            if (!passwordMatch) {
-                res.send({ "status": "error", "message": "Incorrect password" });
-            }
-            const token = jwt.sign({ userId: user._id, email: user.email, role: "admin" }, secret, { expiresIn: '1h' })
-            res.send({ "status": "success", "token": token });
         } catch (error) {
             console.log(error)
             res.send({ "status": "error", "message": "Login error" });

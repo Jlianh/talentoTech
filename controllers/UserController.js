@@ -1,5 +1,5 @@
 const UserSchema = require('../models/User');
-const Utils = require('../utils/Utils');
+const Utils = require('../Utils/Utils');
 
 const xlsx = require('xlsx')
 const fs = require('fs')
@@ -23,7 +23,9 @@ class UserController {
     }
 
     async addSingleUser(req, res) {
-        const password = await bcrypt.hash(req.body.password, 10);
+
+        const password = await utils.encryptPassword(req.body.password, false);
+
         let user = UserSchema({
             identification: req.body.identification,
             name: req.body.name,
@@ -32,7 +34,7 @@ class UserController {
             password: password
         })
         user.save().then((result) => {
-            res.send(result)
+            res.json({ "status": "success", "message": "User created successfully", "data" : result });
         }).catch((err) => {
             if (err.code == 11000) {
                 res.json({ "status": "failed", "message": "Email already exists" });
@@ -46,20 +48,25 @@ class UserController {
     async editUser(req, res) {
         var id = req.params.id;
 
-        const password = utils.encryptPassword(req.params.password, false)
+        let hashedPassword;
+        if(req.body.password){
+            hashedPassword = await utils.encryptPassword(req.body.password, false)
+        }
 
         var updatedUser = {
-            identification: req.body.id,
+            identification: req.body.identification,
             name: req.body.name,
             lastname: req.body.lastname,
             email: req.body.email,
-            password: password
+            password: hashedPassword
         };
 
+        console.log(id, updatedUser);
+
         UserSchema.findByIdAndUpdate(id, updatedUser, { new: true }).then((result) => {
-            res.send(result)
+            res.json({ "status": "success", "message": "User updated successfully", "data" : result });
         }).catch((error) => {
-            res.send("Error al actualizar el Usuario");
+            res.json({ "status": "failed", "message": "User updating falied"});
         });
     }
 
